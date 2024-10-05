@@ -108,6 +108,4 @@ smart-waste-management/
 ├── requirements.txt              # Python dependencies
 └── README.md                     # Project Documentation
 ```
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
 
