@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Lakshmi Dashboard</title>
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link
+      rel="icon"
+       rel="icon" 
+       href="{{ url_for('static', filename='img/favicon.ico') }}"
+
+      
+      type="image/x-icon"
+    />
+
+    <!-- Fonts and icons -->
+    <script src="static/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["{{ url_for('static', filename='css/fonts.min.css') }}"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+    <style>
+      .day {
+          width: 40px;
+          height: 40px;
+          display: inline-block;
+          text-align: center;
+          vertical-align: middle;
+          line-height: 40px;
+          margin: 5px;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+  
+      .event-day {
+          background-color: green; /* Event days are highlighted in green */
+          color: white;
+      }
+  
+      .day.empty {
+          background-color: transparent;
+      }
+  
+      .day:hover {
+          background-color: lightgray;
+      }
+  
+      table {
+          width: 100%;
+          margin-top: 20px;
+          border-collapse: collapse;
+      }
+  
+      table th, table td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: center;
+      }
+  
+      table th {
+          background-color: #f4f4f4;
+          font-weight: bold;
+      }
+  </style>
+  
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const daysContainer = document.getElementById('days');
+          const eventDetails = document.getElementById('event-details');
+          const monthName = document.getElementById('month-name');
+          const yearName = document.getElementById('year');
+          const prevButton = document.getElementById('prev');
+          const nextButton = document.getElementById('next');
+          const date = new Date();
+  
+          function renderCalendar() {
+              const month = date.getMonth() + 1; // JavaScript months are 0-based
+              const year = date.getFullYear();
+              const firstDay = new Date(year, month - 1, 1).getDay();
+              const lastDay = new Date(year, month, 0).getDate();
+  
+              daysContainer.innerHTML = '';
+              monthName.textContent = date.toLocaleString('default', { month: 'long' });
+              yearName.textContent = year;
+  
+              // Fetch event counts for this month/year
+              fetch(`/get_event_counts?month=${month}&year=${year}`)
+                  .then(response => response.json())
+                  .then(eventCounts => {
+                      // Render blank days before the first day of the month
+                      for (let i = 0; i < firstDay; i++) {
+                          const blankDay = document.createElement('div');
+                          blankDay.classList.add('day', 'empty');
+                          daysContainer.appendChild(blankDay);
+                      }
+  
+                      // Render the days of the current month
+                      for (let day = 1; day <= lastDay; day++) {
+                          const dayElement = document.createElement('div');
+                          dayElement.classList.add('day');
+                          dayElement.textContent = day;
+  
+                          // Check if there are events on this day
+                          if (eventCounts[day]) {
+                              dayElement.classList.add('event-day');
+                              dayElement.style.backgroundColor = 'green'; // Highlight in green
+                          }
+  
+                          dayElement.addEventListener('click', () => {
+                              const selectedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                              loadEventsForDate(selectedDate);
+                          });
+  
+                          daysContainer.appendChild(dayElement);
+                      }
+                  });
+          }
+  
+          function loadEventsForDate(date) {
+              fetch(`/get_events?date=${date}`)
+                  .then(response => response.json())
+                  .then(events => {
+                      let eventDetailsContent = '';
+                      if (events.length >= 0) {
+                          events.forEach(event => {
+                              eventDetailsContent += `
+                                  <tr>
+                                      <td>${event.event_name}</td>                                     
+                                      <td><a href="${event.location}" target="_blank">View Location</a></td>
+                                      <td>${event.vehicles_needed}</td>   
+                                      <td>${event.personnel_needed}</td>   
+                                  </tr>`;
+                          });
+                      } 
+                      // else {
+                      //     eventDetailsContent = '<tr><td colspan="4">No events found for this date.</td></tr>';
+                      // }
+                      eventDetails.innerHTML = eventDetailsContent;
+                  });
+          }
+  
+          prevButton.addEventListener('click', () => {
+              date.setMonth(date.getMonth() - 1);
+              renderCalendar();
+          });
+  
+          nextButton.addEventListener('click', () => {
+              date.setMonth(date.getMonth() + 1);
+              renderCalendar();
+          });
+  
+          // Render calendar when the page loads
+          renderCalendar();
+      });
+  </script>
+  
+  
+    
+
+    <!-- CSS Files -->
+     <!-- Linking CSS using url_for in Flask -->
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles1.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/plugins.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kaiadmin.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles1.css') }}">
+
+<!-- 
+    <link rel="stylesheet" href="static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="static/css/plugins.min.css" />
+    <link rel="stylesheet" href="static/css/kaiadmin.min.css" /> -->
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/kaiadmin.min.css') }}"> -->
+    <!-- <link rel="stylesheet" href="static/css/demo.css" /> -->
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Sidebar -->
+      <div class="sidebar" data-background-color="dark">
+        <div class="sidebar-logo">
+          <!-- Logo Header -->
+          <div class="logo-header" data-background-color="dark">
+            <a href="{{ url_for('index') }}" class="logo"> <!-- Updated link to use Flask's url_for -->
+              <img
+                src="{{ url_for('static', filename='img/kaiadmin/logo_light.svg') }}"
+                alt="navbar brand"
+                class="navbar-brand"
+                height="20"
+              />
+            </a>
+            <div class="nav-toggle">
+              <button class="btn btn-toggle toggle-sidebar">
+                <i class="gg-menu-right"></i>
+              </button>
+              <button class="btn btn-toggle sidenav-toggler">
+                <i class="gg-meDnu-left"></i>
+              </button>
+            </div>
+            <button class="topbar-toggler more">
+              <i class="gg-more-vertical-alt"></i>
+            </button>
+          </div>
+          <!-- End Logo Header -->
+        </div>
+      
+        <!-- Sidebar -->
+        <div class="sidebar-wrapper scrollbar scrollbar-inner">
+          <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+              <li class="nav-item active">
+                <a
+                  data-bs-toggle="collapse"
+                  href="#dashboard"
+                  class="collapsed"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-home"></i>
+                  <p>Dashboard</p>
+                </a>
+              </li>
+      
+              <li class="nav-item">
+                <a href="#real-time-analysis" class="collapsed" aria-expanded="false"> <!-- Updated link -->
+                  <i class="fas fa-layer-group"></i>
+                  <p>Real time analysis</p>
+                </a>
+              </li> <!-- Added closing tag for this li -->
+              
+      
+              <li class="nav-item">
+                <a href="#predg" class="collapsed" aria-expanded="false"> <!-- Updated link -->
+                  <i class="fas fa-layer-group"></i>
+                  <p>Pred Garbage</p>
+                </a>
+              </li>
+              <!-- Closing tag for this li -->
+              <li class="nav-item">
+                <a href="#veh-all"
+                  class="collapsed"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bars"></i>
+                  <p>Vehicle Allocation</p>
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a
+                  
+                  href="#plan"
+                  class="collapsed"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bars"></i>
+                  <p>Event Planning</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  
+                  href="#qu"
+                  class="collapsed"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bars"></i>
+                  <p>Quiries</p>
+                </a>
+              </li> 
+
+            </ul>
+          </div>
+        </div>
+        <!-- Nav end -->
+      </div>
+      
+      <!-- End Sidebar -->
+
+      <div class="main-panel">
+        <div class="main-header">
+          <div class="main-header-logo">
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="dark">
+              <a href="index.html" class="logo">
+                <img
+                 src="{{ url_for('static', filename='img/kaiadmin/logo_light.svg') }}"
+                  
+                  alt="navbar brand"
+                  class="navbar-brand"
+                  height="20"
+                />
+              </a>
+              <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                  <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                  <i class="gg-menu-left"></i>
+                </button>
+              </div>
+              <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+              </button>
+            </div>
+            <!-- End Logo Header -->
+          </div>
+          <!-- Navbar Header -->
+          <nav
+            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+          >
+            <div class="container-fluid">
+              <nav
+                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+              >
+                
+              </nav>
+
+              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <li
+                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
+                >
+                  <a
+                    class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <i class="fa fa-search"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-search animated fadeIn">
+                    <form class="navbar-left navbar-form nav-search">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          placeholder="Search ..."
+                          class="form-control"
+                        />
+                      </div>
+                    </form>
+                  </ul>
+                </li>
+                
+                
+                
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <div class="avatar-sm">
+                      <img
+                      src="{{ url_for('static', filename='img/profile.jpg') }}"
+                        
+                        alt="..."
+                        class="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold">Admin</span>
+                    </span>
+                  </a>
+                  
+                </li>
+              </ul>
+            </div>
+            <!-- Navbar Header Ends-->
+          </nav>
+          <!-- End Navbar -->
+        </div>
+
+        <div class="container">
+          <div class="page-inner">
+            <div
+              class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+            >
+              <div>
+                <h3 class="fw-bold mb-3">Dashboard</h3>
+                <h6 class="op-7 mb-2">Lakshmi Admin Dashboard</h6>
+              </div>
+             
+            </div>
+           <!-- start cards -->
+            <div class="row">
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-primary bubble-shadow-small"
+                        >
+                          <i class="fas fa-users"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Bins</p>
+                          <h4 class="card-title">81</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-info bubble-shadow-small"
+                        >
+                          <i class="fas fa-user-check"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Trucks</p>
+                          <h4 class="card-title">20</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-success bubble-shadow-small"
+                        >
+                          <i class="fas fa-luggage-cart"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Events</p>
+                          <h4 class="card-title">8</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-secondary bubble-shadow-small"
+                        >
+                          <i class="far fa-check-circle"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">OverFill</p>
+                          <h4 class="card-title">16</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- card ends -->
+            <!-- here paste map -->
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZUGoqEFEKNUM30vpCm4Qs1pZkeacFVsA"></script>
+            <div class="row" id="real-time-analysis" style="margin: 20px;"> <!-- Added ID here -->
+              <div class="col-md-12">
+                  <div class="card card-round">
+                      <div class="card-header">
+                          <div class="card-head-row card-tools-still-right">
+                              <h4 class="card-title">Real-time Analysis</h4>
+                              <div class="card-tools">
+                                  <button class="btn btn-icon btn-link btn-primary btn-xs">
+                                      <span class="fa fa-angle-down"></span>
+                                  </button>
+                                  <button class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card">
+                                      <span class="fa fa-sync-alt"></span>
+                                  </button>
+                                  <button class="btn btn-icon btn-link btn-primary btn-xs">
+                                      <span class="fa fa-times"></span>
+                                  </button>
+                              </div>
+                          </div>
+                          <p class="card-category">Map of Dustbin Distribution in Puducherry</p>
+                      </div>
+                      <div class="card-body py-3">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="table-responsive table-hover table-sales">
+                                      <table class="table">
+                                          <thead>
+                                              <tr>
+                                                  <th>Location</th>
+                                                  <th>Weight (kg)</th>
+                                                  <th>Fill Level (%)</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              {% for location in top_locations %}
+                                                  <tr>
+                                                      <td>{{ location['Location'] }}</td>
+                                                      <td class="text-end">{{ location['Weight (kg)'] }}</td>
+                                                      <td class="text-end">{{ location['Fill Level (%)'] }}</td>
+                                                  </tr>
+                                              {% endfor %}
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="mapcontainer">
+                                      <div id="map" class="w-100" style="height: 400px;"></div> <!-- Map height defined here -->
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      
+          <script>
+              const locations = {{ top_locations|tojson }};
+              
+              function initMap() {
+                  const map = new google.maps.Map(document.getElementById('map'), {
+                      zoom: 12,
+                      center: { lat: 11.935, lng: 79.834 }  // Default center (Puducherry)
+                  });
+      
+                  locations.forEach(location => {
+                      const marker = new google.maps.Marker({
+                          position: {
+                              lat: parseFloat(location.Latitude), 
+                              lng: parseFloat(location.Longitude)
+                          },
+                          map: map,
+                          title: location.Location
+                      });
+      
+                      const infoWindow = new google.maps.InfoWindow({
+                          content: `Location: ${location.Location}<br>Fill Level: ${location['Fill Level (%)']}%<br>Weight: ${location['Weight (kg)']} kg`
+                      });
+      
+                      marker.addListener('mouseover', () => {
+                          infoWindow.open(map, marker);
+                      });
+      
+                      marker.addListener('mouseout', () => {
+                          infoWindow.close();
+                      });
+                  });
+              }
+      
+              window.onload = initMap;
+          </script>
+          <div class="container">
+            <div class="row">
+                <!-- Left Column with Predicted Garbage and Graphs -->
+                <div class="col-md-8">
+                    <!-- Predicted Garbage Section -->
+                    <div class="card mb-4" id="predg">
+                        <div class="card-body">
+                            <h5 class="mt-4">Predicted Garbage For 7days</h5>
+                            <img id="density-graph" src="data:image/png;base64,{{ density_graph }}" alt="Density Graph" style="width: 100%; height: auto; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Right Column with Fil Alert and Locations -->
+                <div class="col-md-4">
+                    <!-- Fil Alert (Scrollable Locations) -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Locations</h5>
+                            <div style="height: 200px; overflow-y: scroll;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="locations-table">
+                                        {% for location in locations %}
+                                        <tr class="location-row" data-location="{{ location }}" onclick="updateGraph('{{ location }}', this)">
+                                            <td>{{ location }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Users Online (Garbage Fill Level) -->
+                    <div class="card">
+                        <div class="card-body">
+                            
+                            <h5 class="card-title">Overall Garbage</h5>
+                            <img id="main-graph" src="data:image/png;base64,{{ main_graph }}" alt="Main Graph" style="width: 100%; height: auto; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Inline JavaScript to handle updates -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function updateGraph(location, row) {
+                // Reset the glow effect for all rows
+                const rows = document.querySelectorAll('#locations-table tr');
+                rows.forEach(r => r.classList.remove('active'));
+    
+                // Add the glow effect to the clicked row
+                row.classList.add('active');
+    
+                fetch(`/update/${location}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('density-graph').src = 'data:image/png;base64,' + data.density_graph;
+                    });
+            }
+        </script>
+<!-- VEHICLE ALLOCATION IS START -->
+
+<!-- VEHICLE ALLOCATION IS END -->
+
+
+            <!-- card 2 starts -->
+            <div class="row">
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-primary bubble-shadow-small"
+                        >
+                          <i class="fas fa-users"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Fuel</p>
+                          <h4 class="card-title">60</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-info bubble-shadow-small"
+                        >
+                          <i class="fas fa-user-check"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Garbage Collected</p>
+                          <h4 class="card-title">1303</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-success bubble-shadow-small"
+                        >
+                          <i class="fas fa-luggage-cart"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Costs</p>
+                          <h4 class="card-title">Rs. 5,200</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-icon">
+                        <div
+                          class="icon-big text-center icon-secondary bubble-shadow-small"
+                        >
+                          <i class="far fa-check-circle"></i>
+                        </div>
+                      </div>
+                      <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                          <p class="card-category">Time & Distance</p>
+                          <h4 class="card-title">350 Km</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- finish cards 2 -->
+             <!-- Events Planning start -->
+             <div class="row">
+              <div class="col-md-12">
+                  <div class="card card-round" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                      <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 10px 15px; border-bottom: 1px solid #ddd;">
+                          <h4 class="card-title" id="plan" style="margin: 0;">Events Planning</h4>
+                          <h4 class="card-title" style="margin: 0;">Events Table</h4>
+                      </div>
+            
+                      <!-- body starts -->
+                   <div class="row row-flex" style="padding: 15px;">
+            
+                        <!-- Left Side: Calendar -->
+                        <div class="calendar-container col-md-6" style="border-right: 1px solid #ddd; padding-right: 20px;">
+                          <div class="month-navigation" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #ccc; border-radius: 8px; max-width: 300px; margin: 0 auto;">
+                              <button id="prev" class="btn btn-secondary" style="background-color: #6c757d; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">&lt;</button>
+                              <div style="display: flex; flex-direction: column; align-items: center;">
+                                  <h2 id="month-name" style="margin: 0; font-size: 20px;">October</h2>
+                                  <div id="year" style="font-size: 14px; color: #666;">2024</div>
+                              </div>
+                              <button id="next" class="btn btn-secondary" style="background-color: #6c757d; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">&gt;</button>
+                          </div>
+                          
+                          <div class="weekdays text-center fw-bold" style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold; font-size: 14px;">
+                              <div>Sun</div>
+                              <div>Mon</div>
+                              <div>Tue</div>
+                              <div>Wed</div>
+                              <div>Thu</div>
+                              <div>Fri</div>
+                              <div>Sat</div>
+                          </div>
+                          <div class="days" id="days" style="display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 5px; margin-top: 10px;">
+                              <!-- Calendar days will go here -->
+                          </div>
+                        </div>
+            
+                        <!-- Right Side: Event Table -->
+                        <div class="event-table-container col-md-6" style="padding-left: 20px;">
+                            <h5 style="margin-bottom: 15px;">Upcoming Events</h5>
+                            <table class="table table-hover event-table" style="width: 100%; border-collapse: collapse;">
+                                <thead class="table-dark" style="background-color: #343a40; color: white;">
+                                    <tr>
+                                        <th style="padding: 10px;">Event Type</th>
+                                        <th style="padding: 10px;">Address</th>
+                                        <th style="padding: 10px;">Vehicles Needed</th>
+                                        <th style="padding: 10px;">Personnel Needed</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="event-details" style="border: 1px solid #ddd;">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; padding: 15px;">Select a date to view events.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- body ends -->
+                  </div>
+              </div>
+            </div>
+            
+<!-- Events Planning ends -->
+            <!-- finish map -->
+             <!-- Quiries start -->
+<div class="row">
+  <div class="col-md-4">
+      <div class="card card-round">
+          <div class="card-body">
+              <div class="card-head-row card-tools-still-right" id="qu">
+                  <div class="card-title">Queries</div>
+              </div>
+              <div class="card-list py-4">
+                  {% for event in events %}
+                  <div class="item-list">
+                      <div class="avatar">
+                          <span class="avatar-title rounded-circle border border-white">
+                              {{ event.name[0] }} <!-- Display the first letter of the name -->
+                          </span>
+                      </div>
+                      <div class="info-user ms-3">
+                          <div class="username">{{ event.name }}</div>
+                          <div class="status">{{ event.status }}</div>
+                      </div>
+                      <button 
+                          class="btn btn-icon btn-link op-8 me-1" 
+                          onclick="showDetails('{{ event._id }}', '{{ event.description }}', '{{ event.latitude }}', '{{ event.longitude }}', '{{ event.image_url }}'); return false;">
+                          <i class="far fa-user"></i>
+                      </button>
+                      <button class="btn btn-icon btn-link btn-danger op-8">
+                          <i class="fas fa-trash"></i>
+                      </button>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </div>
+  </div>
+
+<!-- Queries info start -->
+<div class="col-md-8">
+  <div class="card card-round">
+      <div class="card-header">
+          <div class="card-head-row card-tools-still-right">
+              <div class="card-title">Queries Informations</div>
+              <div class="card-tools">
+                  <div class="dropdown">
+                      <!-- Dropdown content if needed -->
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="card-body p-0">
+          <div id="complaint-details">
+              {% if event_details %}
+              <div style="padding: 10px;">
+                  <h5>Complaint ID: {{ event_details._id }}</h5>
+                  <img src="{{ event_details.image_url }}" alt="Complaint Image" style="width: 50%; height: auto;">
+                  <p>Description: {{ event_details.description }}</p>
+                  <!-- Removed Latitude and Longitude display -->
+                  <p>
+                      <a href="https://www.google.com/maps/@{{ event_details.latitude }},{{ event_details.longitude }},12z" target="_blank">View on Google Maps</a>
+                  </p>
+                  <p>
+                      <a href="https://www.openstreetmap.org/?mlat={{ event_details.latitude }}&mlon={{ event_details.longitude }}#map=12/{{ event_details.latitude }}/{{ event_details.longitude }}" target="_blank">View on OpenStreetMap</a>
+                  </p>
+              </div>
+              {% else %}
+              <p>No complaint selected. Please click on an event to see details.</p>
+              {% endif %}
+          </div>
+      </div>
+      <style>
+          .card-body img {
+              width: 100%;  /* Make the image fill the width of the container */
+              height: auto; /* Maintain the aspect ratio */
+          }
+      </style>
+  </div>
+</div>
+<!-- Queries info ends -->
+
+</div>
+
+<script>
+  function showDetails(complaintId, description, latitude, longitude, imageUrl) {
+      const detailsDiv = document.getElementById('complaint-details');
+      detailsDiv.innerHTML = `
+          <div style="padding: 10px;">
+              <h5>Complaint ID: ${complaintId}</h5>
+              <img src="${imageUrl}" alt="Complaint Image" style="width: 50%; height: auto;">
+              <p>Description: ${description}</p>
+              <!-- Removed Latitude and Longitude display -->
+              <p>
+                  
+              </p>
+              <p>
+                  <a href="https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=12/${latitude}/${longitude}" target="_blank">View the Location</a>
+              </p>
+          </div>
+      `;
+  }
+</script>
+
+
+          
+              <!-- Queries info ends -->
+          </div>
+            
+                        
+            
+            
+          </div>
+        </div>
+
+       
+      </div>
+
+      
+      
+    </div>
+    <!--   Core JS Files   -->
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='js/core/jquery-3.7.1.min.js') }}"></script>
+
+<!-- Popper -->
+<script src="{{ url_for('static', filename='js/core/popper.min.js') }}"></script>
+
+<!-- Bootstrap -->
+<script src="{{ url_for('static', filename='js/core/bootstrap.min.js') }}"></script>
+
+<!-- jQuery Scrollbar -->
+<script src="{{ url_for('static', filename='js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
+
+<!-- Chart JS -->
+<script src="{{ url_for('static', filename='js/plugin/chart.js/chart.min.js') }}"></script>
+
+<!-- jQuery Sparkline -->
+<script src="{{ url_for('static', filename='js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
+
+<!-- Chart Circle -->
+<script src="{{ url_for('static', filename='js/plugin/chart-circle/circles.min.js') }}"></script>
+
+<!-- Datatables -->
+<script src="{{ url_for('static', filename='js/plugin/datatables/datatables.min.js') }}"></script>
+
+<!-- Bootstrap Notify -->
+<script src="{{ url_for('static', filename='js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+
+<!-- jQuery Vector Maps -->
+<script src="{{ url_for('static', filename='js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plugin/jsvectormap/world.js') }}"></script>
+
+<!-- Sweet Alert -->
+<script src="{{ url_for('static', filename='js/plugin/sweetalert/sweetalert.min.js') }}"></script>
+
+<!-- Kaiadmin JS -->
+<script src="{{ url_for('static', filename='js/kaiadmin.min.js') }}"></script>
+
+<!-- Kaiadmin DEMO methods (don't include it in your project) -->
+<script src="{{ url_for('static', filename='js/setting-demo.js') }}"></script>
+<script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+
+    <!-- Include jQuery and Sparkline -->
+<script src="{{ url_for('static', filename='js/core/jquery-3.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
+
+<!-- Your custom script -->
+<script>
+  $(document).ready(function() {
+    // Line chart blue color
+    $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+      type: "line",
+      height: "70",
+      width: "100%",
+      lineWidth: "2",
+      lineColor: "#177dff",
+      fillColor: "rgba(23, 125, 255, 0.14)",
+    });
+
+    $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+      type: "line",
+      height: "70",
+      width: "100%",
+      lineWidth: "2",
+      lineColor: "#f3545d",
+      fillColor: "rgba(243, 84, 93, .14)",
+    });
+
+    $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+      type: "line",
+      height: "70",
+      width: "100%",
+      lineWidth: "2",
+      lineColor: "#ffa534",
+      fillColor: "rgba(255, 165, 52, .14)",
+    });
+  });
+</script>
+
+  </body>
+</html>

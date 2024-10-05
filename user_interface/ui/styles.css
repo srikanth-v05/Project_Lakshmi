@@ -1,0 +1,122 @@
+:root {
+    --background-color: #1F2235;  /* Darker background for better contrast */
+    --primary-green: #6FCF97;     /* Softened green for the boxes */
+    --hover-green: #5AB383;       /* Slightly lighter green on hover */
+    --icon-color: #25283D;        /* Dark shade for icons */
+    --text-color: #FFFFFF;        /* White text */
+    --box-shadow-color: rgba(0, 0, 0, 0.5);  /* Deeper shadow for a modern feel */
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: var(--background-color);
+    color: var(--primary-green);
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .logo {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.header .logo i {
+    margin-right: 10px;
+}
+
+.content-area {
+    background-color: var(--background-color);
+    padding: 30px;
+    flex: 1; /* Allows the content area to expand */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Updated icon-box-container for centering and responsiveness */
+.icon-box-container {
+    display: flex;
+    gap: 20px;  /* Reduced gap between boxes */
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 50px; /* Added some space from the top */
+}
+
+/* Make the icon-box smaller and keep them centered */
+.icon-box {
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px;  /* Reduced padding inside boxes */
+    background-color: var(--primary-green);
+    box-shadow: 0px 4px 20px var(--box-shadow-color);
+    color: var(--text-color);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    width: 100%;  /* Set to 100% of available space within the max-width */
+    max-width: 450px;  /* Reduced max width for smaller boxes */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 350px;  /* Reduced height */
+}
+
+.icon-box:hover {
+    transform: scale(1.05);
+    background-color: var(--hover-green);
+}
+
+.icon-box h4 {
+    font-size: 1.5rem; /* Slightly reduced heading size */
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.icon-box p {
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.icon-box i {
+    font-size: 2.5rem;  /* Reduced icon size */
+    color: var(--icon-color);
+}
+
+/* Chatbot box at bottom right corner remains unchanged */
+.chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-green);
+    color: var(--text-color);
+    padding: 15px 20px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 15px var(--box-shadow-color);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.chatbot:hover {
+    transform: scale(1.1);
+    background-color: var(--hover-green);
+}
+
+.chatbot i {
+    font-size: 2rem;
+    margin-right: 10px;
+    color: var(--icon-color);
+}

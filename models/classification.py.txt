@@ -1,0 +1,94 @@
+from optimum.intel import OVModelForImageClassification
+from transformers import AutoImageProcessor
+import torch
+from PIL import Image
+import os
+import google.generativeai as genai
+
+# Function to load and preprocess the image
+def load_image(image_path):
+    try:
+        # Load and convert image to RGB
+        pil_image = Image.open(image_path).convert("RGB")
+        return pil_image
+    except Exception as e:
+        print(f"Error loading image: {e}")
+        return None
+
+# Function to predict the class of the garbage item
+def classify_image(model, processor, pil_image):
+    # Preprocess the image
+    inputs = processor(images=pil_image, return_tensors="pt")
+    
+    # Perform inference
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Get predicted class and confidence
+    predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+    confidence, predicted_class_idx = predictions.max(dim=-1)
+    confidence = confidence.item()
+    predicted_class_idx = predicted_class_idx.item()
+    
+    # Get the labels
+    labels = model.config.id2label
+    predicted_class = labels[predicted_class_idx] if confidence > 0.5 else "Unknown"
+    
+    return predicted_class, confidence
+
+# Function to generate recycling ideas from Gemini AI
+def generate_recycling_ideas(predicted_class):
+    # Configure Gemini AI
+    os.environ["GEMINI_API_KEY"] = "AIzaSyDZzI8w-dJ1KFl8Z0zKzAqKepJ6P8fSK8E"
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    
+    # Generation configuration for Gemini AI
+    generation_config = {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 64,
+        "max_output_tokens": 2000,
+        "response_mime_type": "text/plain",
+    }
+    
+    # If predicted class is known, generate recycling ideas
+    if predicted_class != "Unknown":
+        model_gen = genai.GenerativeModel(model_name="gemini-1.5-flash", generation_config=generation_config)
+        prompt = f"{predicted_class} recycling ideas for home and alternatives if non-biodegradable."
+        
+        try:
+            response = model_gen.generate_content([prompt])
+            return response.text
+        except Exception as e:
+            return f"Error in generating content from Gemini: {e}"
+    else:
+        return "The confidence is too low to generate ideas for recycling."
+
+# Main function to run the entire process
+def main():
+    # Load the processor and model
+    processor = AutoImageProcessor.from_pretrained("yangy50/garbage-classification")
+    model = OVModelForImageClassification.from_pretrained("yangy50/garbage-classification")
+    
+    # Get the input image path from the user
+    image_path = input("Please enter the path to the image file: ")
+    
+    # Load the image
+    pil_image = load_image(image_path)
+    if pil_image is None:
+        return
+    
+    # Classify the image
+    predicted_class, confidence = classify_image(model, processor, pil_image)
+    
+    # Display the prediction and confidence
+    print(f'Predicted: {predicted_class} ({confidence:.2f})')
+    
+    # Generate and display recycling ideas if confidence is high enough
+    recycling_ideas = generate_recycling_ideas(predicted_class)
+    print("Recycling ideas from Gemini AI:")
+    print(recycling_ideas)
+
+# Run the main function
+if __name__ == "__main__":
+    main()

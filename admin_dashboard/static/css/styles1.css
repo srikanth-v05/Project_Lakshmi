@@ -1,0 +1,114 @@
+
+
+/* Left-side for calendar */
+.left-side {
+    width:10%; /* Calendar takes up 50% of the space */
+    margin-right: 20px;
+}
+
+.calendar-container {
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#month-name {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.month {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.month button {
+    background-color: #3b3f47;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.month h2 {
+    margin: 0;
+}
+
+#prev, #next {
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px;
+    margin: 5px;
+    font-size: 0.9rem;
+}
+
+.weekdays, .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.days div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: white; /* Default background color */
+    transition: background-color 0.3s ease;
+}
+
+.day {
+    cursor: pointer;
+}
+
+.day:hover {
+    background-color: #f0f0f0;
+}
+
+/* Right-side for event details */
+.right-side {
+    width: 50%; /* Event details take up the other 50% */
+}
+
+#event-details {
+    border: 1px solid #ddd;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#event-details p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.highlight-green {
+    background-color: #28a745;
+}
+
+.highlight-yellow {
+    background-color: #ffc107;
+}
+
+.highlight-red {
+    background-color: #dc3545;
+}
+/* Highlight event days */
+.event-day {
+    background-color: #ffcccb; /* Light red for event days */
+    color: #000; /* Ensure text is readable */
+    border: 1px solid #f00; /* Optional: Red border */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.event-day:hover {
+    background-color: #ff9999; /* Darker red on hover */
+}
